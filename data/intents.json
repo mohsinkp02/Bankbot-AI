@@ -1,0 +1,326 @@
+{
+  "intents": [
+    {
+      "tag": "greetings",
+      "patterns": [
+        "hi",
+        "hello",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "is anyone there?",
+        "hello central bank ai"
+      ],
+      "responses": [
+        "Hello! Welcome to Central Bank AI. How can I assist you with your banking needs today?",
+        "Hi there! I'm your Central Bank virtual assistant. What can I do for you?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "thanks for the help",
+        "thank you",
+        "that's all"
+      ],
+      "responses": [
+        "Thank you for choosing Central Bank. Have a great day!",
+        "Goodbye! Feel free to reach out if you have more questions."
+      ]
+    },
+    {
+      "tag": "account_opening",
+      "patterns": [
+        "how to open account",
+        "create new bank account",
+        "open savings account",
+        "steps to open account",
+        "account opening procedure",
+        "documents for account",
+        "required documents",
+        "what documents do i need"
+      ],
+      "responses": [
+        "You can open a savings account online via our website or mobile app by providing your Aadhaar and PAN. Alternatively, visit any branch with your ID and address proof.",
+        "To open an account, you will need a valid ID (Aadhaar/Passport), PAN card, and proof of residence."
+      ]
+    },
+    {
+      "tag": "balance_enquiry",
+      "patterns": [
+        "balance",
+        "check balance",
+        "check my balance",
+        "what is my balance",
+        "account balance",
+        "how much money in my account",
+        "view balance"
+      ],
+      "responses": [
+        "Your current account balance is displayed on your dashboard. You can also check it via SMS banking or by calling our toll-free number.",
+        "To view your balance, simply log in to your dashboard or use our mobile banking app."
+      ]
+    },
+    {
+      "tag": "fund_transfer",
+      "patterns": [
+        "transfer money",
+        "send funds",
+        "how to transfer money",
+        "make a payment",
+        "wire transfer",
+        "neft rtgs imps"
+      ],
+      "responses": [
+        "You can transfer funds via NEFT, RTGS, or IMPS through the 'Transfer Money' section in your dashboard.",
+        "For instant transfers, use IMPS or UPI. For larger amounts, NEFT or RTGS are recommended."
+      ]
+    },
+    {
+      "tag": "debit_card",
+      "patterns": [
+        "debit card",
+        "apply for debit card",
+        "new debit card",
+        "block debit card",
+        "lost card"
+      ],
+      "responses": [
+        "You can manage your debit card, including blocking it or requesting a new one, under the 'Cards' section of your dashboard.",
+        "If your debit card is lost or stolen, please block it immediately via the app or call 1800-111-2222."
+      ]
+    },
+    {
+      "tag": "credit_card",
+      "patterns": [
+        "credit card",
+        "apply for credit card",
+        "credit card limit",
+        "pay credit card bill",
+        "credit card offers"
+      ],
+      "responses": [
+        "Apply for various credit cards through our 'Cards' portal. You can also view your statements and pay bills there.",
+        "Check your eligibility for a credit card increase in the 'Card Services' section."
+      ]
+    },
+    {
+      "tag": "atm_issues",
+      "patterns": [
+        "atm problem",
+        "money not dispensed",
+        "atm card stuck",
+        "atm pin reset",
+        "atm transaction failure"
+      ],
+      "responses": [
+        "If cash was not dispensed but debited, it will usually be reversed within 24-48 hours. If not, please lodge a complaint in the app.",
+        "You can reset your ATM PIN at any Central Bank ATM or via Internet Banking."
+      ]
+    },
+    {
+      "tag": "internet_banking",
+      "patterns": [
+        "internet banking",
+        "net banking",
+        "how to register for net banking",
+        "net banking login issues"
+      ],
+      "responses": [
+        "Register for Internet Banking online using your debit card and account details on our official website.",
+        "Ensure you never share your Internet Banking password or OTP with anyone."
+      ]
+    },
+    {
+      "tag": "mobile_banking",
+      "patterns": [
+        "mobile banking",
+        "banking app",
+        "how to use app",
+        "mobile app support"
+      ],
+      "responses": [
+        "Download our official mobile banking app from the Play Store or App Store for secure on-the-go banking.",
+        "Our mobile app allows you to manage accounts, pay bills, and transfer funds instantly."
+      ]
+    },
+    {
+      "tag": "loan_information",
+      "patterns": [
+        "loan",
+        "personal loan",
+        "home loan",
+        "car loan",
+        "loan eligibility",
+        "apply for loan"
+      ],
+      "responses": [
+        "We offer a range of loans including Home, Personal, and Education loans at competitive interest rates. Apply online via the 'Loans' tab.",
+        "Check your loan eligibility and required documents in the 'Loan Center' section of your dashboard."
+      ]
+    },
+    {
+      "tag": "emi_calculation",
+      "patterns": [
+        "emi",
+        "calculate emi",
+        "loan calculator",
+        "monthly installment"
+      ],
+      "responses": [
+        "Use our EMI Calculator on the website to estimate your monthly installments based on loan amount, interest, and tenure.",
+        "For a ₹10 lakh loan at 9% for 5 years, your approximate EMI would be around ₹20,758."
+      ]
+    },
+    {
+      "tag": "fixed_deposit",
+      "patterns": [
+        "fd",
+        "fixed deposit",
+        "fd interest rates",
+        "open fd",
+        "recurring deposit"
+      ],
+      "responses": [
+        "Open a Fixed Deposit (FD) instantly via Net Banking. Current interest rates are up to 7.5% per annum.",
+        "The minimum amount to open an FD is ₹5,000, and you can choose tenures from 7 days to 10 years."
+      ]
+    },
+    {
+      "tag": "kyc_update",
+      "patterns": [
+        "kyc",
+        "update kyc",
+        "kyc documents",
+        "re-kyc"
+      ],
+      "responses": [
+        "Update your KYC details by uploading self-attested documents like Aadhaar and PAN via our 'Profile' section.",
+        "KYC updates are mandatory every few years. You can complete it digitally without visiting the branch."
+      ]
+    },
+    {
+      "tag": "password_reset",
+      "patterns": [
+        "reset password",
+        "forgot password",
+        "change login password",
+        "password recovery"
+      ],
+      "responses": [
+        "Reset your password using the 'Forgot Password' link on the login page. You'll need your registered email/mobile.",
+        "For security, we recommend changing your banking password every 90 days."
+      ]
+    },
+    {
+      "tag": "upi_issues",
+      "patterns": [
+        "upi problem",
+        "upi payment failed",
+        "upi id",
+        "wrong upi transfer"
+      ],
+      "responses": [
+        "If a UPI transaction fails, the amount is usually refunded within 3-5 business days. Check the transaction status in your UPI app.",
+        "You can create or manage your UPI ID in the 'Payments' section of our mobile app."
+      ]
+    },
+    {
+      "tag": "transaction_failure",
+      "patterns": [
+        "transaction failed",
+        "payment declined",
+        "failed payment",
+        "money debited but not received"
+      ],
+      "responses": [
+        "Payment failures can occur due to network issues or insufficient funds. Check your 'Transaction History' for details.",
+        "If money was debited for a failed transaction, it will be automatically credited back within 48-72 hours."
+      ]
+    },
+    {
+      "tag": "charges_fees",
+      "patterns": [
+        "charges",
+        "bank fees",
+        "service charges",
+        "minimum balance penalty",
+        "transaction fees"
+      ],
+      "responses": [
+        "View our full schedule of charges on the website under 'Rates and Services'.",
+        "Maintain a minimum average balance of ₹10,000 to avoid non-maintenance charges."
+      ]
+    },
+    {
+      "tag": "cheque_book_request",
+      "patterns": [
+        "cheque book",
+        "order cheque book",
+        "stop cheque",
+        "cheque status"
+      ],
+      "responses": [
+        "You can request a new cheque book through the 'Services' tab. It will be delivered within 5 working days.",
+        "To stop a cheque payment, log in to Net Banking and go to the Cheque Services section."
+      ]
+    },
+    {
+      "tag": "branch_locator",
+      "patterns": [
+        "find branch",
+        "branch near me",
+        "ifsc code",
+        "bank address",
+        "branch timing"
+      ],
+      "responses": [
+        "Use the 'Branch Locator' on our website to find the nearest branch and its IFSC code.",
+        "Our branches are typically open from 9:30 AM to 4:30 PM on weekdays."
+      ]
+    },
+    {
+      "tag": "interest_rates",
+      "patterns": [
+        "interest",
+        "interest rates",
+        "current interest rates",
+        "savings interest",
+        "loan interest"
+      ],
+      "responses": [
+        "Our current savings account interest rate is 4.0% p.a., while Fixed Deposits offer up to 7.5% p.a. depending on the tenure.",
+        "Interest rates vary by product. Savings accounts currently offer 4.0%, and personal loans start at 10.5% p.a."
+      ]
+    },
+    {
+      "tag": "customer_support",
+      "patterns": [
+        "customer care",
+        "contact bank",
+        "helpline",
+        "support number",
+        "email support",
+        "call number",
+        "helpline number",
+        "support call no"
+      ],
+      "responses": [
+        "Reach our 24/7 customer support at 1800-444-5555 or email us at customercare@centralbank.com.",
+        "Our help desks at branches are available during business hours for in-person assistance."
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm sorry, I didn't quite understand that. Could you please rephrase your banking-related question?",
+        "I'm not sure how to help with that. As a banking assistant, I can help you with accounts, loans, cards, and more. What would you like to know?"
+      ]
+    }
+  ]
+}

@@ -1,20 +1,36 @@
 ---
-title: BankBot AI
-emoji: 🚀
-colorFrom: red
-colorTo: red
-sdk: docker
-app_port: 8501
-tags:
-- streamlit
+title: Central Bank AI
+emoji: 🏦
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.54.0
+app_file: app.py
 pinned: false
-short_description: AI-powered banking assistant
 license: mit
 ---
 
-# Welcome to Streamlit!
+# 🏦 Central Bank AI — BankBot
 
-Edit `/src/streamlit_app.py` to customize this app to your heart's desire. :heart:
+A professional AI-powered banking assistant built with Streamlit.
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+## Features
+- 💬 Banking chatbot powered by **Groq AI** (cloud) or **Ollama** (local)
+- 📊 Financial dashboard with transaction history and analytics
+- 🔐 User authentication with session management
+- 📋 FAQ-based instant responses from a structured intents database
+
+## AI Backend
+- **Cloud (HF Spaces):** Uses [Groq AI](https://console.groq.com) — set `GROQ_API_KEY` as a Space Secret
+- **Local:** Falls back to [Ollama](https://ollama.com) (llama3) automatically
+
+## Setup (Local)
+```bash
+pip install -r requirements.txt
+ollama pull llama3
+streamlit run app.py
+```
+
+## Setup (Hugging Face Spaces)
+1. Add `GROQ_API_KEY` as a **Secret** in Space Settings
+2. The app will automatically use Groq AI
