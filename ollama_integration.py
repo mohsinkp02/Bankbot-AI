@@ -193,9 +193,3 @@ def check_ollama_connection():
         return response.status_code == 200
     except:
         return False
-
-
-def rewrite_banking_response(predefined_answer):
-    """Uses the active AI backend to rewrite a predefined FAQ response."""
-    prompt = f"Rewrite this banking answer to be complete and detailed according to all formal rules:\n\n{predefined_answer}"
-    return get_ai_response(prompt)

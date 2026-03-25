@@ -23,7 +23,6 @@ from utils import (
     get_active_backend,
     get_all_chat_sessions,
     get_faq_response,
-    rewrite_banking_response,
     is_banking_query
 )
 
@@ -575,7 +574,7 @@ def show_dashboard():
             st.session_state.current_tab = "Dashboard"
             st.rerun()
             
-        if st.button("� Banking Assistant", use_container_width=True, type=nav_btn_style2):
+        if st.button(" Banking Assistant", use_container_width=True, type=nav_btn_style2):
             st.session_state.current_tab = "Banking Assistant"
             st.rerun()
             

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.streamlit/
+session.json
+chat_history.json
+BankBot_Accuracy_Document.docx
+generate_accuracy.py
+src/
+.env
+.venv
+venv/
+env/

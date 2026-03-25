@@ -12,7 +12,6 @@ from ollama_integration import (
     get_ai_response,
     stream_ai_response,
     get_active_backend,
-    rewrite_banking_response,
     is_banking_query
 )
 
