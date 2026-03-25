@@ -37,5 +37,3 @@ streamlit run app.py
 
 1. Add `GROQ_API_KEY` as a **Secret** in Space Settings
 2. The app will automatically use Groq AI
-
-Updated sync test
