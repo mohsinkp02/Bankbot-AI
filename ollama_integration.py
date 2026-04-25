@@ -19,11 +19,17 @@ BANKING_KEYWORDS = [
     "document", "required", "identity", "proof", "open"
 ]
 
-SYSTEM_PROMPT = """You are BankBot, a professional banking assistant.
-You ONLY answer banking-related questions.
-If the question is not related to banking, politely refuse.
+SYSTEM_PROMPT = """You are BankBot, a professional banking assistant for Central Bank.
+You ONLY answer banking-related questions. If the question is not related to banking, politely refuse.
 Never answer questions about politics, sports, entertainment, coding, or personal advice.
-Please provide clear, professional, and helpful responses."""
+
+CORE GUIDELINES:
+1. ALWAYS communicate in {language}.
+2. CONTEXT AWARENESS: Use the provided chat history to understand follow-up questions. For example, if the user asks "What is the interest rate?" and then "for home loan", you must understand they are asking about home loan interest rates.
+3. CLARIFYING QUESTIONS: If a user's query is ambiguous (e.g., "how much?"), ask for missing details (e.g., "How much for what service? Balance check or loan EMI?").
+4. CALCULATIONS: Perform financial calculations (EMI, Interest, Eligibility) if information is provided.
+5. DOCUMENT ANALYSIS: If text from a PDF statement is provided, summarize it or answer specific questions about it.
+6. PROFESSIONALISM: Maintain a helpful, formal, and secure tone."""
 
 
 def is_banking_query(user_input):
@@ -38,16 +44,17 @@ def get_active_backend():
 
 # ─── Groq AI Functions ────────────────────────────────────────────────────────
 
-def get_groq_response(prompt, history=None, model="llama-3.3-70b-versatile"):
+def get_groq_response(prompt, history=None, model="llama-3.3-70b-versatile", language="English"):
     """Fetches a response from Groq AI API."""
     try:
         from groq import Groq
         client = Groq(api_key=GROQ_API_KEY)
 
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        sys_prompt = SYSTEM_PROMPT.format(language=language)
+        messages = [{"role": "system", "content": sys_prompt}]
 
         if history:
-            for msg in history[-5:]:
+            for msg in history[-10:]:
                 if msg.get("role") and msg.get("content"):
                     messages.append({"role": msg["role"], "content": msg["content"]})
 
@@ -65,16 +72,17 @@ def get_groq_response(prompt, history=None, model="llama-3.3-70b-versatile"):
         return None
 
 
-def stream_groq_response(prompt, history=None, model="llama-3.3-70b-versatile"):
+def stream_groq_response(prompt, history=None, model="llama-3.3-70b-versatile", language="English"):
     """Yields streamed response chunks from Groq AI API."""
     try:
         from groq import Groq
         client = Groq(api_key=GROQ_API_KEY)
 
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        sys_prompt = SYSTEM_PROMPT.format(language=language)
+        messages = [{"role": "system", "content": sys_prompt}]
 
         if history:
-            for msg in history[-5:]:
+            for msg in history[-10:]:
                 if msg.get("role") and msg.get("content"):
                     messages.append({"role": msg["role"], "content": msg["content"]})
 
@@ -98,13 +106,14 @@ def stream_groq_response(prompt, history=None, model="llama-3.3-70b-versatile"):
 
 # ─── Ollama Functions ─────────────────────────────────────────────────────────
 
-def get_ollama_response(prompt, history=None, model="llama3:latest"):
+def get_ollama_response(prompt, history=None, model="llama3:latest", language="English"):
     """Fetches a response from a local Ollama instance."""
     url = "http://127.0.0.1:11434/api/chat"
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    sys_prompt = SYSTEM_PROMPT.format(language=language)
+    messages = [{"role": "system", "content": sys_prompt}]
 
     if history:
-        for msg in history[-5:]:
+        for msg in history[-10:]:
             if msg.get("role") and msg.get("content"):
                 messages.append({"role": msg["role"], "content": msg["content"]})
 
@@ -129,13 +138,14 @@ def get_ollama_response(prompt, history=None, model="llama3:latest"):
         return None
 
 
-def stream_ollama_response(prompt, history=None, model="llama3:latest"):
+def stream_ollama_response(prompt, history=None, model="llama3:latest", language="English"):
     """Yields chunks of the response from a local Ollama instance for streaming."""
     url = "http://127.0.0.1:11434/api/chat"
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    sys_prompt = SYSTEM_PROMPT.format(language=language)
+    messages = [{"role": "system", "content": sys_prompt}]
 
     if history:
-        for msg in history[-5:]:
+        for msg in history[-10:]:
             if msg.get("role") and msg.get("content"):
                 messages.append({"role": msg["role"], "content": msg["content"]})
 
@@ -169,19 +179,19 @@ def stream_ollama_response(prompt, history=None, model="llama3:latest"):
 
 # ─── Unified Wrapper Functions ────────────────────────────────────────────────
 
-def get_ai_response(prompt, history=None):
+def get_ai_response(prompt, history=None, language="English"):
     """Auto-selects Groq or Ollama based on environment."""
     if USE_GROQ:
-        return get_groq_response(prompt, history)
-    return get_ollama_response(prompt, history)
+        return get_groq_response(prompt, history, language=language)
+    return get_ollama_response(prompt, history, language=language)
 
 
-def stream_ai_response(prompt, history=None):
+def stream_ai_response(prompt, history=None, language="English"):
     """Auto-selects streaming from Groq or Ollama based on environment."""
     if USE_GROQ:
-        yield from stream_groq_response(prompt, history)
+        yield from stream_groq_response(prompt, history, language=language)
     else:
-        yield from stream_ollama_response(prompt, history)
+        yield from stream_ollama_response(prompt, history, language=language)
 
 
 def check_ollama_connection():

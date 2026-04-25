@@ -1,1 +1,83 @@
-{"admin": {"email": "admin@gmail.com", "password": "Admin@123"}, "mohsin": {"email": "mohsin@gmail.com", "password": "Mohsin@123"}}
+{
+    "admin": {
+        "email": "admin@gmail.com",
+        "password": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+        "is_admin": true,
+        "created_at": "2026-04-24 18:33:59",
+        "language": "English",
+        "transactions": [
+            {
+                "id": "e211b05f-5027-40e3-ab9e-b0ea0e7b3a17",
+                "date": "2026-04-25 00:36:25",
+                "type": "debit",
+                "amount": 50.0,
+                "category": "Transfer",
+                "details": "To: testuser"
+            }
+        ],
+        "balance": 849950.0
+    },
+    "mohsin": {
+        "email": "mohsin@gmail.com",
+        "password": "43be465f8c26acbc79a3e0a1ca0ae823f2a9dc283e53df1b07cc0729776039b2",
+        "is_admin": false,
+        "created_at": "2026-04-24 18:33:59",
+        "language": "English",
+        "transactions": [],
+        "balance": 850000.0
+    },
+    "testuser": {
+        "email": "test@example.com",
+        "password": "a109e36947ad56de1dca1cc49f0ef8ac9ad9a7b1aa0df41fb3c4cb73c1ff01ea",
+        "is_admin": false,
+        "created_at": "2026-04-24 22:07:54",
+        "balance": 1050.0,
+        "transactions": [
+            {
+                "id": "12685ff6-549c-4e83-845d-01216b32a8b4",
+                "date": "2026-04-25 00:36:25",
+                "type": "credit",
+                "amount": 50.0,
+                "category": "Transfer",
+                "details": "From: admin"
+            }
+        ],
+        "language": "English"
+    },
+    "admin2": {
+        "email": "admin2@admin.com",
+        "password": "1c142b2d01aa34e9a36bde480645a57fd69e14155dacfab5a3f9257b77fdc8d8",
+        "is_admin": false,
+        "created_at": "2026-04-24 22:53:21",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "testuser2": {
+        "email": "testuser2@gmail.com",
+        "password": "113459eb7bb31bddee85ade5230d6ad5d8b2fb52879e00a84ff6ae1067a210d3",
+        "is_admin": false,
+        "created_at": "2026-04-25 00:17:56",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "testuser_v3": {
+        "email": "test3@test.com",
+        "password": "7ab5c66293c7f2871badf243bbaaa07a1eac473ada37084e23832dc34f3e5696",
+        "is_admin": false,
+        "created_at": "2026-04-25 00:28:22",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "testuser_final_v100": {
+        "email": "final@test.com",
+        "password": "7ab5c66293c7f2871badf243bbaaa07a1eac473ada37084e23832dc34f3e5696",
+        "is_admin": false,
+        "created_at": "2026-04-25 00:35:17",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    }
+}
