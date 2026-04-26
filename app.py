@@ -1100,7 +1100,7 @@ def show_dashboard():
         if getattr(st.session_state, 'faq_trigger', None):
             prompt = st.session_state.faq_trigger
             display_prompt = getattr(st.session_state, 'faq_display', prompt)
-            is_pdf_analysis = st.session_state.get('faq_display', '').startswith("I have uploaded")
+            is_pdf_analysis = (st.session_state.get('faq_display') or '').startswith("I have uploaded")
             st.session_state.faq_trigger = None
             st.session_state.faq_display = None
             
