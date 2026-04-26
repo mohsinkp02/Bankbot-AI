@@ -7,7 +7,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import time
 import json
@@ -592,8 +591,7 @@ def signup(username, email, password):
     if username in users:
         return False, "Username already exists"
     
-    hashed = hash_password(password)
-    persist_user(username, email, hashed)
+    persist_user(username, email, password)
     return True, "Account created successfully!"
 
 def logout():
@@ -605,24 +603,27 @@ def logout():
     st.session_state.current_chat_id = None
     clear_active_session()
 
-def get_mock_transactions():
-    dates = pd.date_range(end=pd.Timestamp.now(), periods=30, freq='D')
-    
-    types = []
-    amounts = []
-    cats = []
-    for _ in range(30):
-        if np.random.random() > 0.8:
-            types.append("Income")
-            cats.append(np.random.choice(["Salary", "Investment", "Refund"]))
-            amounts.append(round(float(np.random.uniform(5000, 25000)), 2))
-        else:
-            types.append("Expense")
-            cats.append(np.random.choice(["Food", "Rent", "Shopping", "Transport", "Entertainment", "Utilities"]))
-            amounts.append(round(float(np.random.uniform(100, 5000)), 2))
-            
-    data = {"Date": dates, "Category": cats, "Type": types, "Amount": amounts}
-    return pd.DataFrame(data)
+def get_user_transactions_df(username):
+    """Builds a dashboard-friendly DataFrame from stored user transactions."""
+    transactions = get_transactions(username)
+    if not transactions:
+        return pd.DataFrame(columns=["Date", "Category", "Type", "Amount", "Details", "Direction"])
+
+    rows = []
+    for txn in transactions:
+        raw_type = str(txn.get("type", "")).lower()
+        rows.append({
+            "Date": pd.to_datetime(txn.get("date"), errors="coerce"),
+            "Category": txn.get("category", "Other") or "Other",
+            "Type": "Income" if raw_type == "credit" else "Expense",
+            "Amount": float(txn.get("amount", 0) or 0),
+            "Details": txn.get("details", ""),
+            "Direction": raw_type.title() if raw_type else "Unknown"
+        })
+
+    df = pd.DataFrame(rows)
+    df["Date"] = df["Date"].fillna(pd.Timestamp.now())
+    return df.sort_values(by="Date", ascending=False).reset_index(drop=True)
 
 def show_login_page():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -955,31 +956,34 @@ def show_dashboard():
         
         # Visualizations
         col_left, col_right = st.columns([2, 1])
-        df = get_mock_transactions()
+        df = get_user_transactions_df(st.session_state.username)
         
         with col_left:
             st.write("### 📉 Income vs Expenses")
-            daily_data = df.groupby(['Date', 'Type'])['Amount'].sum().reset_index()
-            fig_bar = px.bar(
-                daily_data, 
-                x='Date', 
-                y='Amount', 
-                color='Type',
-                barmode='group',
-                color_discrete_map={"Income": st.session_state.colors['success'], "Expense": st.session_state.colors['danger']}
-            )
-            fig_bar.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=300, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-            if st.session_state.theme == "dark":
-                fig_bar.update_layout(font_color="white")
+            if df.empty:
+                st.info("No transactions yet. Make a transfer or add account activity to see your trends.")
             else:
-                fig_bar.update_layout(font_color="black")
-            st.plotly_chart(fig_bar, use_container_width=True)
+                daily_data = df.groupby([pd.Grouper(key="Date", freq="D"), "Type"])["Amount"].sum().reset_index()
+                fig_bar = px.bar(
+                    daily_data,
+                    x='Date',
+                    y='Amount',
+                    color='Type',
+                    barmode='group',
+                    color_discrete_map={"Income": st.session_state.colors['success'], "Expense": st.session_state.colors['danger']}
+                )
+                fig_bar.update_layout(margin=dict(t=0, b=0, l=0, r=0), height=300, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", showlegend=True, legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+                if st.session_state.theme == "dark":
+                    fig_bar.update_layout(font_color="white")
+                else:
+                    fig_bar.update_layout(font_color="black")
+                st.plotly_chart(fig_bar, use_container_width=True)
             
         with col_right:
             st.write("### 🍰 Expenses Breakdown")
             expense_df = df[df['Type'] == 'Expense']
             if expense_df.empty:
-                st.info("No expenses recorded yet.")
+                st.info("No expense transactions recorded yet.")
             else:
                 category_data = expense_df.groupby('Category')['Amount'].sum().reset_index()
                 fig = px.pie(
@@ -1007,11 +1011,17 @@ def show_dashboard():
         
         # Consolidated Transactions
         st.markdown("### 📝 Recent Transaction History")
-        st.dataframe(
-            df.sort_values(by="Date", ascending=False), 
-            use_container_width=True, 
-            hide_index=True
-        )
+        if df.empty:
+            st.info("Your transaction history will appear here after your first account activity.")
+        else:
+            history_df = df.copy()
+            history_df["Date"] = history_df["Date"].dt.strftime("%Y-%m-%d %H:%M:%S")
+            history_df["Amount"] = history_df["Amount"].map(format_currency)
+            st.dataframe(
+                history_df[["Date", "Direction", "Type", "Category", "Amount", "Details"]],
+                use_container_width=True,
+                hide_index=True
+            )
 
     elif page == "Banking Assistant":
         is_connected = check_ollama_connection()
@@ -1062,53 +1072,41 @@ def show_dashboard():
         if uploaded_file:
             if st.button("Analyze Statement", type="primary"):
                 with st.spinner(t("analyzing")):
-                    text = extract_text_from_pdf(uploaded_file)
+                    text, error = extract_text_from_pdf(uploaded_file)
                     if text:
                         st.session_state.faq_trigger = "I have uploaded a bank statement. Please summarize it: " + text[:1500]
+                        st.session_state.faq_display = "I have uploaded a bank statement. Please summarize it."
                     else:
-                        st.error("Failed to extract text from PDF.")
+                        st.error(f"Failed to extract text from PDF: {error}")
         
         # 🎙️ Voice Support UI
-        st.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
-        voice_col1, voice_col2 = st.columns([1, 1])
-        with voice_col1:
-            if st.button("🎤 Start Voice Input"):
-                st.components.v1.html("""
-                    <script>
-                    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                    recognition.lang = 'en-US';
-                    recognition.start();
-                    recognition.onresult = (event) => {
-                        const text = event.results[0][0].transcript;
-                        window.parent.postMessage({type: 'voice_input', text: text}, '*');
-                    };
-                    </script>
-                """, height=0)
-                st.info("Listening... Please speak now.")
-        with voice_col2:
-            st.session_state.tts_enabled = st.toggle("🔊 Voice Responses (TTS)", value=st.session_state.get("tts_enabled", False))
+
             
         chat_container = st.container(height=400, border=False)
         
         with chat_container:
             for message in st.session_state.messages:
                 role = message["role"]
+                display_content = message.get("display_content", message["content"])
                 if role == "user":
-                    st.markdown(f'<div class="user-bubble">{message["content"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="user-bubble">{display_content}</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="ai-bubble">{message["content"]}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="ai-bubble">{display_content}</div>', unsafe_allow_html=True)
 
         prompt = st.chat_input(t("chat_input"))
         
+        display_prompt = prompt
         if getattr(st.session_state, 'faq_trigger', None):
             prompt = st.session_state.faq_trigger
+            display_prompt = getattr(st.session_state, 'faq_display', prompt)
             st.session_state.faq_trigger = None
+            st.session_state.faq_display = None
             
         if prompt:
-            st.session_state.messages.append({"role": "user", "content": prompt})
+            st.session_state.messages.append({"role": "user", "content": prompt, "display_content": display_prompt})
             
             with chat_container:
-                st.markdown(f'<div class="user-bubble">{prompt}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="user-bubble">{display_prompt}</div>', unsafe_allow_html=True)
                 
                 faq_response = get_faq_response(prompt, language=st.session_state.get("language", "English"))
                 
@@ -1144,13 +1142,7 @@ def show_dashboard():
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
             # 🔊 Handle Text-to-Speech
-            if st.session_state.get("tts_enabled", False):
-                st.components.v1.html(f"""
-                    <script>
-                    const msg = new SpeechSynthesisUtterance({json.dumps(full_response)});
-                    window.speechSynthesis.speak(msg);
-                    </script>
-                """, height=0)
+            # Voice input and TTS removed
             # Save using the persistent utility
             new_id = save_chat_session(st.session_state.username, st.session_state, st.session_state.messages, st.session_state.current_chat_id)
             if not st.session_state.current_chat_id:

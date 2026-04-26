@@ -243,17 +243,77 @@ def save_intents(data):
         print(f"Error saving intents: {e}")
         return False
 
-def extract_text_from_pdf(pdf_file):
-    """Extracts text from an uploaded PDF file."""
+def extract_text_with_ocr(pdf_file):
+    """Fallback OCR extraction for scanned or image-based PDFs."""
     try:
+        import pytesseract
+        import cv2
+        import numpy as np
+        from pdf2image import convert_from_bytes
+        import os
+        import platform
+        
+        if platform.system() == 'Windows':
+            # Hardcode path for local Windows testing
+            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+            poppler_path = os.path.join(os.path.dirname(__file__), 'poppler-24.02.0', 'Library', 'bin')
+        else:
+            poppler_path = None
+    except ImportError as e:
+        raise Exception(f"OCR Python packages missing: {e}. Please install pdf2image, pytesseract, opencv-python-headless, numpy.")
+
+    try:
+        if hasattr(pdf_file, 'seek'):
+            pdf_file.seek(0)
+        
+        pdf_bytes = pdf_file.read()
+        if platform.system() == 'Windows':
+            images = convert_from_bytes(pdf_bytes, poppler_path=poppler_path)
+        else:
+            images = convert_from_bytes(pdf_bytes)
+        
+        text = ""
+        for img in images:
+            img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+            thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
+            
+            page_text = pytesseract.image_to_string(thresh)
+            text += page_text + "\n"
+            
+        text = text.replace('₹', 'Rs.')
+        text = re.sub(r'\n+', '\n', text)
+        
+        extracted = text.strip()
+        if not extracted:
+            raise Exception("OCR completed but no text was found in the images.")
+        return extracted
+    except Exception as e:
+        raise Exception(f"OCR System dependencies missing or failed: {e}. Make sure Tesseract OCR and Poppler are installed on your OS and added to PATH.")
+
+def extract_text_from_pdf(pdf_file):
+    """Extracts text from an uploaded PDF file with OCR fallback. Returns (text, error)."""
+    try:
+        if hasattr(pdf_file, 'seek'):
+            pdf_file.seek(0)
         reader = PyPDF2.PdfReader(pdf_file)
         text = ""
         for page in reader.pages:
-            text += page.extract_text()
-        return text
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+                
+        extracted = text.strip()
+        if extracted:
+            return extracted, None
+            
+        # Fallback to OCR if empty
+        return extract_text_with_ocr(pdf_file), None
     except Exception as e:
-        print(f"Error extracting PDF text: {e}")
-        return None
+        try:
+            return extract_text_with_ocr(pdf_file), None
+        except Exception as ocr_error:
+            return None, str(ocr_error)
 
 def clear_active_session():
     if os.path.exists(SESSION_FILE):

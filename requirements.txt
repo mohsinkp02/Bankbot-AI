@@ -7,3 +7,6 @@ groq
 pillow
 watchdog
 PyPDF2
+pdf2image
+pytesseract
+opencv-python-headless
