@@ -51,7 +51,7 @@ from utils import (
     calculate_loan_eligibility
 )
 
-# ─── Multi-Language Support ───────────────────────────────────────────────────
+# ─── Multi-Language Support Code ───────────────────────────────────────────────────
 TRANSLATIONS = {
     "English": {
         "dashboard": "📊 Dashboard",
