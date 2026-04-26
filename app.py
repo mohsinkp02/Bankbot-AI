@@ -1096,9 +1096,11 @@ def show_dashboard():
         prompt = st.chat_input(t("chat_input"))
         
         display_prompt = prompt
+        is_pdf_analysis = False
         if getattr(st.session_state, 'faq_trigger', None):
             prompt = st.session_state.faq_trigger
             display_prompt = getattr(st.session_state, 'faq_display', prompt)
+            is_pdf_analysis = st.session_state.get('faq_display', '').startswith("I have uploaded")
             st.session_state.faq_trigger = None
             st.session_state.faq_display = None
             
@@ -1108,7 +1110,8 @@ def show_dashboard():
             with chat_container:
                 st.markdown(f'<div class="user-bubble">{display_prompt}</div>', unsafe_allow_html=True)
                 
-                faq_response = get_faq_response(prompt, language=st.session_state.get("language", "English"))
+                # Skip FAQ for PDF analysis — send directly to AI
+                faq_response = None if is_pdf_analysis else get_faq_response(prompt, language=st.session_state.get("language", "English"))
                 
                 res_box = st.empty()
                 full_response = ""
@@ -1116,7 +1119,7 @@ def show_dashboard():
                 if faq_response:
                     full_response = faq_response
                     res_box.markdown(f'<div class="ai-bubble">{full_response}</div>', unsafe_allow_html=True)
-                elif is_banking_query(prompt):
+                elif is_pdf_analysis or is_banking_query(prompt):
                     if check_ollama_connection():
                         last_update_time = time.time()
                         for chunk in stream_ai_response(prompt, history=st.session_state.messages[:-1]):
