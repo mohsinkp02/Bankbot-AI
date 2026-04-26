@@ -4,7 +4,7 @@ emoji: 🏦
 colorFrom: blue
 colorTo: indigo
 sdk: streamlit
-sdk_version: 1.54.0
+sdk_version: 1.41.1
 app_file: app.py
 pinned: false
 license: mit
@@ -32,6 +32,8 @@ pip install -r requirements.txt
 ollama pull llama3
 streamlit run app.py
 ```
+
+If the UI ever shows `Failed to fetch dynamically imported module`, restart the Streamlit server after reinstalling dependencies and do a hard refresh in the browser so stale JS chunks are cleared.
 
 ## Setup (Hugging Face Spaces)
 

@@ -15,6 +15,14 @@
       "responses": [
         "Hello! Welcome to Central Bank AI. How can I assist you with your banking needs today?",
         "Hi there! I'm your Central Bank virtual assistant. What can I do for you?"
+      ],
+      "responses_hi": [
+        "नमस्ते! सेंट्रल बैंक AI में आपका स्वागत है। आज मैं आपकी बैंकिंग जरूरतों में आपकी कैसे मदद कर सकता हूँ?",
+        "नमस्ते! मैं आपका सेंट्रल बैंक वर्चुअल असिस्टेंट हूँ। मैं आपके लिए क्या कर सकता हूँ?"
+      ],
+      "responses_mr": [
+        "नमस्कार! सेंट्रल बँक AI मध्ये आपले स्वागत आहे. आज मी तुमच्या बँकिंग गरजांमध्ये तुम्हाला कशी मदत करू शकतो?",
+        "नमस्कार! मी तुमचा सेंट्रल बँक व्हर्च्युअल असिस्टंट आहे. मी तुमच्यासाठी काय करू शकतो?"
       ]
     },
     {
@@ -63,6 +71,14 @@
       "responses": [
         "Your current account balance is displayed on your dashboard. You can also check it via SMS banking or by calling our toll-free number.",
         "To view your balance, simply log in to your dashboard or use our mobile banking app."
+      ],
+      "responses_hi": [
+        "आपका वर्तमान खाता शेष आपके डैशबोर्ड पर प्रदर्शित है। आप इसे SMS बैंकिंग के माध्यम से या हमारे टोल-फ्री नंबर पर कॉल करके भी देख सकते हैं।",
+        "अपना बैलेंस देखने के लिए, बस अपने डैशबोर्ड पर लॉग इन करें या हमारे मोबाइल बैंकिंग ऐप का उपयोग करें।"
+      ],
+      "responses_mr": [
+        "तुमची चालू खाते शिल्लक तुमच्या डॅशबोर्डवर प्रदर्शित केली आहे. तुम्ही SMS बँकिंगद्वारे किंवा आमच्या टोल-फ्री नंबरवर कॉल करून देखील ते तपासू शकता.",
+        "तुमची शिल्लक पाहण्यासाठी, फक्त तुमच्या डॅशबोर्डवर लॉग इन करा किंवा आमचे मोबाइल बँकिंग ॲप वापरा."
       ]
     },
     {
@@ -312,6 +328,14 @@
       "responses": [
         "Reach our 24/7 customer support at 1800-444-5555 or email us at customercare@centralbank.com.",
         "Our help desks at branches are available during business hours for in-person assistance."
+      ],
+      "responses_hi": [
+        "हमारे 24/7 कस्टमर सपोर्ट से 1800-444-5555 पर संपर्क करें या हमें customercare@centralbank.com पर ईमेल करें।",
+        "शाखाओं में हमारे हेल्प डेस्क व्यक्तिगत सहायता के लिए व्यावसायिक घंटों के दौरान उपलब्ध हैं।"
+      ],
+      "responses_mr": [
+        "आमच्या 24/7 ग्राहक समर्थनाशी 1800-444-5555 वर संपर्क साधा किंवा आम्हाला customercare@centralbank.com वर ईमेल करा.",
+        "शाखांमधील आमचे मदत कक्ष वैयक्तिक मदतीसाठी कामकाजाच्या वेळेत उपलब्ध आहेत."
       ]
     },
     {

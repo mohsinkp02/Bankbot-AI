@@ -10,3 +10,8 @@ src/
 .venv
 venv/
 env/
+
+# Local OCR Windows Binaries
+poppler-24.02.0/
+poppler.zip
+tesseract-setup.exe

@@ -5,7 +5,10 @@ import uuid
 import json
 import os
 import random
+import hashlib
 import streamlit as st
+import PyPDF2
+import io
 from ollama_integration import (
     get_ollama_response,
     stream_ollama_response,
@@ -62,6 +65,255 @@ def get_active_session():
             return data.get("username")
     except:
         return None
+
+# ─── Password Security ────────────────────────────────────────────────────────
+
+def hash_password(password):
+    """Hashes a password using SHA-256."""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(stored_password, provided_password):
+    """Verifies a password against its hash."""
+    return stored_password == hash_password(provided_password)
+
+def migrate_plaintext_passwords():
+    """Migrates any legacy plaintext passwords to SHA-256 hashes."""
+    users = get_persisted_users()
+    changed = False
+    for username in users:
+        password = users[username]["password"]
+        # Check if it looks like a SHA-256 hash (64 hex chars)
+        if not (len(password) == 64 and all(c in "0123456789abcdef" for c in password.lower())):
+            users[username]["password"] = hash_password(password)
+            changed = True
+    
+    if changed:
+        with open(USER_FILE, "w") as f:
+            json.dump(users, f, indent=4)
+
+# ─── User Management ──────────────────────────────────────────────────────────
+
+def is_admin(username):
+    users = get_persisted_users()
+    return users.get(username, {}).get("is_admin", False)
+
+def create_admin_account(password):
+    users = get_persisted_users()
+    users["admin"] = {
+        "email": "admin@centralbank.ai",
+        "password": hash_password(password),
+        "is_admin": True,
+        "created_at": get_timestamp(),
+        "balance": 1000000.0,
+        "transactions": [],
+        "language": "English"
+    }
+    with open(USER_FILE, "w") as f:
+        json.dump(users, f, indent=4)
+
+def persist_user(username, email, password, is_admin=False):
+    users = get_persisted_users()
+    users[username] = {
+        "email": email,
+        "password": hash_password(password),
+        "is_admin": is_admin,
+        "created_at": get_timestamp(),
+        "balance": 1000.0, # Starting balance
+        "transactions": [],
+        "language": "English"
+    }
+    with open(USER_FILE, "w") as f:
+        json.dump(users, f, indent=4)
+
+def get_user_data(username):
+    users = get_persisted_users()
+    return users.get(username, {})
+
+def update_user_data(username, data):
+    users = get_persisted_users()
+    if username in users:
+        users[username].update(data)
+        with open(USER_FILE, "w") as f:
+            json.dump(users, f, indent=4)
+        return True
+    return False
+
+# ─── Banking Simulation ───────────────────────────────────────────────────────
+
+def get_balance(username):
+    return get_user_data(username).get("balance", 0.0)
+
+def update_balance(username, amount):
+    user_data = get_user_data(username)
+    if user_data:
+        user_data["balance"] = amount
+        update_user_data(username, user_data)
+        return True
+    return False
+
+def add_transaction(username, type, amount, category, details=""):
+    user_data = get_user_data(username)
+    if user_data:
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "date": get_timestamp(),
+            "type": type,
+            "amount": amount,
+            "category": category,
+            "details": details
+        }
+        if "transactions" not in user_data:
+            user_data["transactions"] = []
+        user_data["transactions"].insert(0, transaction)
+        update_user_data(username, user_data)
+        return True
+    return False
+
+def get_transactions(username):
+    return get_user_data(username).get("transactions", [])
+
+def transfer_funds(sender, receiver_username, amount, category="Transfer", details=""):
+    users = get_persisted_users()
+    if receiver_username not in users:
+        return False, "Receiver not found"
+    
+    sender_balance = get_balance(sender)
+    if sender_balance < amount:
+        return False, "Insufficient funds"
+    
+    # Deduct from sender
+    update_balance(sender, sender_balance - amount)
+    add_transaction(sender, "debit", amount, category, f"To: {receiver_username}")
+    
+    # Add to receiver
+    receiver_balance = get_balance(receiver_username)
+    update_balance(receiver_username, receiver_balance + amount)
+    add_transaction(receiver_username, "credit", amount, category, f"From: {sender}")
+    
+    return True, "Transfer successful"
+
+# ─── Fraud Detection ──────────────────────────────────────────────────────────
+
+def check_fraud_alerts(username):
+    """Analyzes transactions for suspicious activity."""
+    transactions = get_transactions(username)
+    alerts = []
+    
+    # 1. High amount transfer
+    for txn in transactions:
+        if txn["type"] == "debit" and txn["amount"] >= 50000:
+            alerts.append({
+                "severity": "high",
+                "message": f"Large transaction of {format_currency(txn['amount'])} detected",
+                "timestamp": txn["date"],
+                "details": f"Category: {txn['category']}"
+            })
+    
+    # 2. Rapid transactions (more than 3 in 1 hour - simplified check)
+    # This is a mock implementation
+    if len(transactions) >= 3:
+        alerts.append({
+            "severity": "medium",
+            "message": "Multiple transactions in a short period",
+            "timestamp": get_timestamp(),
+            "details": "Please verify if these were initiated by you"
+        })
+        
+    return alerts
+
+def get_fraud_alerts_summary(username):
+    alerts = check_fraud_alerts(username)
+    return {
+        "total": len(alerts),
+        "high": len([a for a in alerts if a["severity"] == "high"]),
+        "medium": len([a for a in alerts if a["severity"] == "medium"]),
+        "alerts": alerts
+    }
+
+# ─── Data & File Utilities ────────────────────────────────────────────────────
+
+def save_intents(data):
+    """Saves updated intents to the JSON file."""
+    try:
+        os.makedirs(os.path.dirname(INTENTS_FILE), exist_ok=True)
+        with open(INTENTS_FILE, "w") as f:
+            json.dump(data, f, indent=4)
+        return True
+    except Exception as e:
+        print(f"Error saving intents: {e}")
+        return False
+
+def extract_text_with_ocr(pdf_file):
+    """Fallback OCR extraction for scanned or image-based PDFs."""
+    try:
+        import pytesseract
+        import cv2
+        import numpy as np
+        from pdf2image import convert_from_bytes
+        import os
+        import platform
+        
+        if platform.system() == 'Windows':
+            # Hardcode path for local Windows testing
+            pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+            poppler_path = os.path.join(os.path.dirname(__file__), 'poppler-24.02.0', 'Library', 'bin')
+        else:
+            poppler_path = None
+    except ImportError as e:
+        raise Exception(f"OCR Python packages missing: {e}. Please install pdf2image, pytesseract, opencv-python-headless, numpy.")
+
+    try:
+        if hasattr(pdf_file, 'seek'):
+            pdf_file.seek(0)
+        
+        pdf_bytes = pdf_file.read()
+        if platform.system() == 'Windows':
+            images = convert_from_bytes(pdf_bytes, poppler_path=poppler_path)
+        else:
+            images = convert_from_bytes(pdf_bytes)
+        
+        text = ""
+        for img in images:
+            img_cv = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
+            thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
+            
+            page_text = pytesseract.image_to_string(thresh)
+            text += page_text + "\n"
+            
+        text = text.replace('₹', 'Rs.')
+        text = re.sub(r'\n+', '\n', text)
+        
+        extracted = text.strip()
+        if not extracted:
+            raise Exception("OCR completed but no text was found in the images.")
+        return extracted
+    except Exception as e:
+        raise Exception(f"OCR System dependencies missing or failed: {e}. Make sure Tesseract OCR and Poppler are installed on your OS and added to PATH.")
+
+def extract_text_from_pdf(pdf_file):
+    """Extracts text from an uploaded PDF file with OCR fallback. Returns (text, error)."""
+    try:
+        if hasattr(pdf_file, 'seek'):
+            pdf_file.seek(0)
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+                
+        extracted = text.strip()
+        if extracted:
+            return extracted, None
+            
+        # Fallback to OCR if empty
+        return extract_text_with_ocr(pdf_file), None
+    except Exception as e:
+        try:
+            return extract_text_with_ocr(pdf_file), None
+        except Exception as ocr_error:
+            return None, str(ocr_error)
 
 def clear_active_session():
     if os.path.exists(SESSION_FILE):
@@ -205,7 +457,7 @@ def check_ollama_connection():
     from ollama_integration import check_ollama_connection as _check
     return _check()
 
-def get_faq_response(prompt):
+def get_faq_response(prompt, language="English"):
     """
     Checks if the user's prompt matches any common frequently asked questions
     using the structured intents.json data.
@@ -222,9 +474,46 @@ def get_faq_response(prompt):
             # For short patterns (like 'hi'), use word boundary check
             if len(p_lower) <= 3:
                 if re.search(rf"\b{re.escape(p_lower)}\b", prompt_lower):
-                    return random.choice(intent["responses"])
+                    return get_localized_response(intent, language)
             # For longer patterns, substring match is usually fine and more flexible
             elif p_lower in prompt_lower:
-                return random.choice(intent["responses"])
+                return get_localized_response(intent, language)
             
     return None
+
+def get_localized_response(intent, language):
+    """Helper to pick a response in the requested language."""
+    if language == "Hindi":
+        responses = intent.get("responses_hi", intent.get("responses"))
+    elif language == "Marathi":
+        responses = intent.get("responses_mr", intent.get("responses"))
+    else:
+        responses = intent.get("responses")
+    
+    return random.choice(responses)
+
+def calculate_loan_eligibility(monthly_income, existing_emis, tenure_years):
+    """
+    Calculates loan eligibility based on FOIR (Fixed Obligation to Income Ratio).
+    Standard FOIR is usually 50% for most banks.
+    """
+    # Max EMI allowed (50% of income)
+    max_emi_allowed = monthly_income * 0.5
+    
+    # Available EMI for new loan
+    available_emi = max_emi_allowed - existing_emis
+    
+    if available_emi <= 0:
+        return 0, 0
+    
+    # Reverse EMI calculation to find principal
+    # EMI = [P x R x (1+R)^N]/[(1+R)^N-1]
+    # P = EMI * [(1+R)^N-1] / [R * (1+R)^N]
+    
+    rate_annual = 0.09 # Assume 9% interest for eligibility check
+    r = (rate_annual / 12)
+    n = tenure_years * 12
+    
+    principal = available_emi * ((1 + r)**n - 1) / (r * (1 + r)**n)
+    
+    return round(principal, 2), round(available_emi, 2)
