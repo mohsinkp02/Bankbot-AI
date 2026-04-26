@@ -7,6 +7,46 @@
         "language": "English",
         "transactions": [
             {
+                "id": "d95f1ba2-7d69-423b-ba61-29749c45d26b",
+                "date": "2026-04-26 14:25:04",
+                "type": "credit",
+                "amount": 999.0,
+                "category": "Transfer",
+                "details": "From: mohsin1234"
+            },
+            {
+                "id": "138e6421-5f56-490d-8b91-5796d11b8691",
+                "date": "2026-04-26 14:23:01",
+                "type": "credit",
+                "amount": 1.0,
+                "category": "Transfer",
+                "details": "From: mohsin1234"
+            },
+            {
+                "id": "a8c5df63-5c5c-4f2c-a740-e863a5af97c8",
+                "date": "2026-04-26 14:13:35",
+                "type": "debit",
+                "amount": 10000.0,
+                "category": "Transfer",
+                "details": "To: mohsin"
+            },
+            {
+                "id": "8d3017d6-d0d3-47a6-95c8-686cf4a3cffe",
+                "date": "2026-04-26 14:12:55",
+                "type": "debit",
+                "amount": 1000.0,
+                "category": "Transfer",
+                "details": "To: mohsin"
+            },
+            {
+                "id": "bd2b1f90-9407-457c-a61c-827e0bc9e025",
+                "date": "2026-04-25 14:57:33",
+                "type": "debit",
+                "amount": 1.0,
+                "category": "Transfer",
+                "details": "To: testuser"
+            },
+            {
                 "id": "e211b05f-5027-40e3-ab9e-b0ea0e7b3a17",
                 "date": "2026-04-25 00:36:25",
                 "type": "debit",
@@ -15,7 +55,7 @@
                 "details": "To: testuser"
             }
         ],
-        "balance": 849950.0
+        "balance": 839949.0
     },
     "mohsin": {
         "email": "mohsin@gmail.com",
@@ -23,16 +63,41 @@
         "is_admin": false,
         "created_at": "2026-04-24 18:33:59",
         "language": "English",
-        "transactions": [],
-        "balance": 850000.0
+        "transactions": [
+            {
+                "id": "42e6bbc5-7ada-414e-b322-f1f63ae1973f",
+                "date": "2026-04-26 14:13:35",
+                "type": "credit",
+                "amount": 10000.0,
+                "category": "Transfer",
+                "details": "From: admin"
+            },
+            {
+                "id": "3eb7c123-2220-4fea-8b02-8d8471de9916",
+                "date": "2026-04-26 14:12:55",
+                "type": "credit",
+                "amount": 1000.0,
+                "category": "Transfer",
+                "details": "From: admin"
+            }
+        ],
+        "balance": 861000.0
     },
     "testuser": {
         "email": "test@example.com",
         "password": "a109e36947ad56de1dca1cc49f0ef8ac9ad9a7b1aa0df41fb3c4cb73c1ff01ea",
         "is_admin": false,
         "created_at": "2026-04-24 22:07:54",
-        "balance": 1050.0,
+        "balance": 1051.0,
         "transactions": [
+            {
+                "id": "a9ec7fe0-33a0-4f79-a629-49c6cf8f3c21",
+                "date": "2026-04-25 14:57:33",
+                "type": "credit",
+                "amount": 1.0,
+                "category": "Transfer",
+                "details": "From: admin"
+            },
             {
                 "id": "12685ff6-549c-4e83-845d-01216b32a8b4",
                 "date": "2026-04-25 00:36:25",
@@ -78,6 +143,59 @@
         "created_at": "2026-04-25 00:35:17",
         "balance": 1000.0,
         "transactions": [],
+        "language": "English"
+    },
+    "mohsin1": {
+        "email": "mohsin@gmail.com",
+        "password": "8e82e310a535c0eec9d720ee76f965d3e3367d019f203e82147759673d62fd82",
+        "is_admin": false,
+        "created_at": "2026-04-26 14:15:31",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "mohsin123": {
+        "email": "mohsin@gmail.com",
+        "password": "b8697df73a83299a60cc5d8f40f12a4c51f228919694b22ca85afff74123b34d",
+        "is_admin": false,
+        "created_at": "2026-04-26 14:16:52",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "mohsin12": {
+        "email": "mohsin12@gmail.com",
+        "password": "a0587546120404f111fc358f151a7831c51ab0fb9d3c313a237b280a32cfd1a1",
+        "is_admin": false,
+        "created_at": "2026-04-26 14:18:08",
+        "balance": 1000.0,
+        "transactions": [],
+        "language": "English"
+    },
+    "mohsin1234": {
+        "email": "mohsin1234@gmail.com",
+        "password": "6587d995aae88d4491f77d3890a917dd251147a4049e027c93dff8903081d870",
+        "is_admin": false,
+        "created_at": "2026-04-26 14:21:46",
+        "balance": 0.0,
+        "transactions": [
+            {
+                "id": "b3b17d58-3c9c-4883-90b0-d79d7bd1c099",
+                "date": "2026-04-26 14:25:04",
+                "type": "debit",
+                "amount": 999.0,
+                "category": "Transfer",
+                "details": "To: admin"
+            },
+            {
+                "id": "8ddbab41-5f34-4bef-9f80-e6f0c3782ac2",
+                "date": "2026-04-26 14:23:01",
+                "type": "debit",
+                "amount": 1.0,
+                "category": "Transfer",
+                "details": "To: admin"
+            }
+        ],
         "language": "English"
     }
 }
